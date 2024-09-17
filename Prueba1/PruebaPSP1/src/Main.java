@@ -1,48 +1,55 @@
 public class Main {
     public static void main(String[] args) {
-        // Tiempo de inicio en milisegundos
+        // Starting time on ms
         long startTime = System.currentTimeMillis();
 
-        // Definir el número de primos que queremos encontrar (10 millones)
-        int nPrimos = 10000000;
+        
+        // Defining the number of prime numbers that we want to find (10M)
+        int nPrime = 10000000;
 
-        // Estimamos un límite superior para asegurarnos de que encontramos 10 millones de primos que son los que necesitamos.
-        //Esto es necesario porque no sabemos de antemano cuál es el último número que deberíamos verificar para obtener exactamente 10 millones de primos.
-        int limite = estimarLimite(nPrimos);
+        // With a higher limit we are sure that we can find exactly 10M prime numbers because we do not know wich is the last number that we have to verify to obtain exactly 10M prime numbers.
+        int limit = estimarlimit(nPrime);
 
-        // Llamamos a la función cribaEratostenes que nos devuelve un array booleano con los números primos
-        boolean[] esPrimo = cribaEratostenes(limite);
+        // We call the cribaErastotenes function that return us a boolean array with the prime numbers that we need
+        boolean[] isPrime = cribaEratostenes(limit);
 
-        int[] ultimosDos = new int[2];
+        //We create a 2 integer numbers length array to save the last 2 prime numbers that we are going to find.
+        int[] lastTwo = new int[2];
 
-        // Inicializamos un contador para llevar la cuenta de cuántos primos hemos encontrado
-        int contador = 0;
+      
+        // We create a counter to know how many prime numbers we are founding
+        int counter = 0;
 
-        // Recorremos el array esPrimo, comenzando desde 2, ya que el 0 y el 1 no son primos
-        for (int i = 2; i < esPrimo.length && contador < nPrimos; i++) {
-            // Si esPrimo[i] es true, significa que i es un número primo
-            if (esPrimo[i]) {
-                contador++; // Incrementamos el contador de primos
+        // Recorremos el array isPrime, comenzando desde 2, ya que el 0 y el 1 no son primos
+        // We create a loop to run the isPrime array, starting from 2 because 0 and 1 are not prime numbers.
+        for (int i = 2; i < isPrime.length && counter < nPrime; i++) {
+            
+            //If isPrime[i] is true, that means that i is a prime number.
+            if (isPrime[i]) {
+                counter++; 
 
-                // Mostramos los ultimos dos numeros primos
-                if (contador >= 9999999) {
-                    ultimosDos[0] = ultimosDos[1]; // Mover el último primo al penúltimo
-                    ultimosDos[1] = i; // Asignar el nuevo primo como el último
+                
+                // Showing the last 2 prime numbers.
+                if (counter >= 9999999) {
+                    lastTwo[0] = lastTwo[1]; 
+                    lastTwo[1] = i; 
                 }
             }
         }
 
         
-        // Tiempo de finalización en milisegundos
+        
+        // Finishing time in ms.
         long endTime = System.currentTimeMillis();
 
-        // Calculamos la duración restando el tiempo de inicio al tiempo de finalización
+        
+        // Calculating how much time spends from starting poing to finish.
         long duration = endTime - startTime;
 
-        // Imprimimos el tiempo total de ejecución
+    
         System.out.println("Tiempo de ejecución en milisegundos: " + duration + " milisegundos");
-        System.out.println("Los ultimos dos numeros son: "+ ultimosDos[0] + " y " + ultimosDos[1]);
-        System.out.println("Numero total de primos almacenados: " + contador);
+        System.out.println("Los ultimos dos numeros son: "+ lastTwo[0] + " y " + lastTwo[1]);
+        System.out.println("Numero total de primos almacenados: " + counter);
 
     }
 
@@ -51,28 +58,33 @@ public class Main {
 
 
 
-    // Función que implementa la Criba de Eratóstenes para encontrar números primos
-    public static boolean[] cribaEratostenes(int limite) {
-        // Creamos un array booleano donde cada índice representa un número
-        // Inicialmente, asumimos que todos los números desde 2 hasta 'limite' son primos
-        boolean[] esPrimo = new boolean[limite + 1];
-        for (int i = 2; i <= limite; i++) {
-            esPrimo[i] = true; // Marcamos todos los números como primos
+    
+    // Function that implements the Erastotenes sieve to find the prime numbers
+    public static boolean[] cribaEratostenes(int limit) {
+        
+        // We create a boolean array where each index represents a number.
+        // For the begining we are going to say that all the numbers from 2 to "limit" are prime numbers
+        boolean[] isPrime = new boolean[limit + 1];
+        for (int i = 2; i <= limit; i++) {
+            isPrime[i] = true; // ""All numbers are prime""
         }
 
-        // Empezamos a cribar los números primos desde el 2
-        for (int p = 2; p * p <= limite; p++) {
-            // Si esPrimo[p] es true, significa que p es primo
-            if (esPrimo[p]) {
-                // Marcamos todos los múltiplos de p como no primos (false)
-                for (int i = p * p; i <= limite; i += p) {
-                    esPrimo[i] = false; // Los múltiplos de p no son primos
+        // Sifting the prime numbers
+        for (int p = 2; p * p <= limit; p++) {
+            
+            // If isPrime[p] is true, then p is a prime number
+            if (isPrime[p]) {
+                
+                // Then, all his multiple numbers are not prime numbers
+                for (int i = p * p; i <= limit; i += p) {
+                    isPrime[i] = false; // Multiples of p are not prime
                 }
             }
         }
 
-        // Devolvemos el array donde esPrimo[i] indica si i es primo
-        return esPrimo;
+       
+        // We return the array where isPrime[i] says if i is a prime number
+        return isPrime;
     }
 
 
@@ -80,10 +92,10 @@ public class Main {
 
 
 
-    // Función para estimar el límite superior necesario para encontrar n números primos
-    public static int estimarLimite(int n) {
+  
+    public static int estimarlimit(int n) {
         
-        // Estimamos el límite superior usando la fórmula n * (log(n) + log(log(n)))
+       // We estimate the upper limit using the formula n * (log(n) + log(log(n)))
         return (int) (n * (Math.log(n) + Math.log(Math.log(n))));
         
     }
