@@ -1,0 +1,10 @@
+Se deben responder las siguientes preguntas en un documento de texto:
+
+---¿Qué problemática hay en las versiones concurrentes?¿Por qué se producen problemas, podrías explicarlo? 
+    The main problem with the concurrent versions is related with race conditions, If we don't make sure to 
+    handle them, in my case, with the syncronized method, there would be a problem with the shared variable.
+    There would be a non controlled access to it, and then, the finish result is different in almost every execution of the program.
+
+---¿Qué versión tarda más?¿Por qué?
+    The slowest version is the one that we created with 1000 threads, that is because
+    creating and handling 1000 threads needs a good amount of pc resouces.
