@@ -1,21 +1,21 @@
-public class EjemploVariableCompartida8Hilos extends Thread {
-    private static int contador = 0; // Shared variable (counter)
+public class EjemploVariableCompartida8threads extends Thread {
+    private static int counter = 0; // Shared variable (counter)
     private static final int LIMITE = 1000000; // Maximum value for the counter
 
     @Override
     public void run() {
         while (true) {
             // Call the synchronized method to increment the counter if it hasn't reached the limit
-            if (!incrementarContador()) {
+            if (!incrementarCounter()) {
                 break; // Exit the loop if the counter has reached the limit
             }
         }
     }
 
     // Synchronized method to increment the counter and check if the limit has been reached
-    private static synchronized boolean incrementarContador() {
-        if (contador < LIMITE) {
-            contador++; // Increment the counter by 1
+    private static synchronized boolean incrementarCounter() {
+        if (counter < LIMITE) {
+            counter++; // Increment the counter by 1
             return true; // The counter has not yet reached the limit
         } else {
             return false; // The limit has been reached, stop incrementing
@@ -23,22 +23,22 @@ public class EjemploVariableCompartida8Hilos extends Thread {
     }
 
     public static void main(String[] args) {
-        int numHilos = 8; // Number of threads to create
-        Thread[] hilos = new Thread[numHilos]; // Array to store the threads
+        int numThreads = 8; // Number of threads to create
+        Thread[] threads = new Thread[numThreads]; // Array to store the threads
         
         // Record the starting time in milliseconds
         long startTime = System.currentTimeMillis();
 
         // Create and start the threads
-        for (int i = 0; i < numHilos; i++) {
-            hilos[i] = new EjemploVariableCompartida8Hilos();
-            hilos[i].start(); // Start each thread
+        for (int i = 0; i < numThreads; i++) {
+            threads[i] = new EjemploVariableCompartida8threads();
+            threads[i].start(); // Start each thread
         }
 
         // Wait for all threads to finish
-        for (int i = 0; i < numHilos; i++) {
+        for (int i = 0; i < numThreads; i++) {
             try {
-                hilos[i].join(); // Ensure the main thread waits for each thread to finish
+                threads[i].join(); // Ensure the main thread waits for each thread to finish
             } catch (InterruptedException e) {
                 e.printStackTrace(); // Handle potential interruption
             }
@@ -51,7 +51,7 @@ public class EjemploVariableCompartida8Hilos extends Thread {
         long duration = endTime - startTime;
 
         // Print the final value of the counter
-        System.out.println("Final counter value (with synchronization): " + contador);
+        System.out.println("Final counter value (with synchronization): " + counter);
         // Print the execution time in milliseconds
         System.out.println("Execution time in milliseconds: " + duration + " milliseconds");
     }
