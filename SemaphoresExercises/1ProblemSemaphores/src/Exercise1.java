@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-public class App {
+public class Exercise1 {
 
     // 3 surtidores - 2 de gasolina simultáneamente - 1 de diesel
     private static Semaphore gasolinaSemaphore = new Semaphore(2,true);
