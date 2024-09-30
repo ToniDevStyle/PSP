@@ -30,6 +30,7 @@ public class Exercise2 {
                         hasWaitedForWashing = true;
                     }
                     // We add a waiting time to have a more realistic result on the printed messages
+                    // Ademas nos ayuda a que no se bloquee el proceso 
                     Thread.sleep(100); 
                 }
                 System.out.println("El vehículo " + vehicleId + " está siendo lavado con jabón");
