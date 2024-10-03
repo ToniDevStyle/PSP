@@ -107,8 +107,18 @@ public class SistemaGestionFabricaDulces {
             }
             threads[i].start(); 
         }
+        // Bucle para esperar a que todos los hilos terminen.
+        for (int i = 0; i < numThreads; i++) {
+            try {
+                threads[i].join(); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
-}
+    }
+    
+
 
 
 // Cuando usas acquire(), el hilo que llama a este método se bloquea (se detiene) si no hay permisos disponibles en el semáforo. 
