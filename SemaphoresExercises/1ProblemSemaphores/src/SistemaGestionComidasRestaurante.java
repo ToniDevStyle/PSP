@@ -36,17 +36,17 @@ public class SistemaGestionComidasRestaurante {
                     System.out.println("El cocinero " + id + " está preparando un plato");
                 //}
                 // We use this boolean variable to not be showing all the time the same message meanwhile the vehicle is on waiting status
-                boolean hasWaitedForWashing = false;
+                boolean hasWaited = false;
                 // El productor intenta adquirir un permiso del semáforo del mostrador de comida.
                 // Getting the foodCounter sempahore key if its possible
                 while (!foodCounter.tryAcquire()) {
 
-                    if (!hasWaitedForWashing) {
+                    if (!hasWaited) {
                         // We just print the message on the first time that the vehicle is waiting
                         //synchronized (messageLock) {
                             System.out.println("El cocinero " + id + " debe esperar, el mostrador está lleno");
                         //}
-                        hasWaitedForWashing = true;
+                        hasWaited = true;
                     }
 
                     Thread.sleep(100);
