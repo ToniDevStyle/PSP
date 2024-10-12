@@ -4,15 +4,17 @@ import java.util.concurrent.Semaphore;
 
 public class LectoresYEscritores {
 
-    private static int readersCount = 0;       // Contador de lectores
-    private static int writersCount = 0;       // Contador de escritores esperando o escribiendo
+    //VARIABLES DE CONTROL, DOS SEMAFOROS, UNO PARA CONTROLAR EL ACCESO A NUESTRAS VARIABLES CRITICAS, Y EL OTRO PARA CONTROLAR EL ACCESO A LA BASE DE DATOS
+    //VARIABLES CRITICAS
+    private static int readersCount = 0;       // Readers counter
+    private static int writersCount = 0;       // Writers writting or waiting counter
+    //SEMAFOROS
     private static Semaphore controlAccess = new Semaphore(1);  // Para controlar acceso a variables compartidas
     private static Semaphore dbAccess = new Semaphore(1);       // Para controlar acceso a la base de datos
 
-    //LECTORES
     public static class Type0Thread extends Thread {
 
-        private int id; // ID del hilo lector
+        private int id; 
     
         public Type0Thread(int id) {
             this.id = id;
@@ -23,9 +25,11 @@ public class LectoresYEscritores {
             try {
                 System.out.println("El lector " + id + " ha llegado");
     
-                controlAccess.acquire();  // Protege las variables de acceso a los lectores
+                // Protects variable acces for the readers
+                controlAccess.acquire();  //Protege las variables de acceso a los lectores
     
-                // Si hay escritores esperando, el lector debe esperar
+                //Si hay escritores esperando, el lector debe esperar
+                //If there are writers waiting, readers have to wait
                 while (writersCount > 0) {
                     System.out.println("El lector " + id + " debe esperar.");
                     controlAccess.release();
@@ -40,18 +44,19 @@ public class LectoresYEscritores {
                 readersCount++;
     
                 // Si es el primer lector, bloquear el acceso de los escritores
+                // If there is the first reader, blocking the acces for the writters. 
                 if (readersCount == 1) {
-                    dbAccess.acquire();  // El primer lector bloquea el acceso de los escritores
+                    dbAccess.acquire();  
                 }
     
                 controlAccess.release();  // Liberar el mutex para permitir que otros lectores accedan
     
                 System.out.println("El lector " + id + " está accediendo a la base de datos");
-                Thread.sleep((int) (Math.random() * 1000));  // Simula el acceso a la base de datos
+                Thread.sleep((int) (Math.random() * 1000));  // Simula la lectura a la base de datos
     
                 System.out.println("El lector " + id + " ha terminado de acceder a la base de datos");
     
-                controlAccess.acquire();  // Adquirir el mutex para modificar el contador de lectores
+                controlAccess.acquire();  // Adquirir el mutex para modificar el contador de lectores (variable critica)
     
                 readersCount--;
     
@@ -71,7 +76,7 @@ public class LectoresYEscritores {
     //ESCRITORES
     public static class Type1Thread extends Thread {
 
-        private int id; // ID del hilo escritor
+        private int id; 
     
         public Type1Thread(int id) {
             this.id = id;
@@ -83,7 +88,7 @@ public class LectoresYEscritores {
                 //  PREGUNTAR SI HAY QUE COMPROBAR EN ESTE MOMENTO SI HAY MAS ESCRITORES QUE HAN LLEGADO O DESPUES, CUANDO REALMENTE VAYAN A MANIPULAR LA BBDD
                 System.out.println("El escritor " + id + " ha llegado");
     
-                controlAccess.acquire();  // Protege el acceso a las variables de control
+                controlAccess.acquire();  // Protege el acceso a las variables de control (readersCount)
     
                 // Si hay lectores activos, el escritor debe esperar
                 while (readersCount > 0) {
