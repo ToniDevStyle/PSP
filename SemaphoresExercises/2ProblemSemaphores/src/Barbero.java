@@ -13,32 +13,33 @@ public class Barbero {
     // El proceso de corte toma un tiempo aleatorio (simulado con Sleep). Durante este tiempo, el hilo correspondiente del barbero está ocupado.
     // "El barbero ha terminado de cortar el cabello del cliente X"
     static class BarberoThread extends Thread {
-
+        private int currentClient = -1;  // To store the ID of the current client being served
+    
         @Override
         public void run() {
-            //BUCLE INFINITO Y ESPERA DE SEMAFORO
             while (true) {
                 try {
-                    // Si hay un cliente, el barbero lo atiende
-                    // Si no hay ningun cliente, el barbero duerme hasta que entre alguien
+                    // Barber waits until a client wakes him up
                     sleepingBarber.acquire();
-
-                    barberChair.acquire(); // Bloquear la silla del barbero mientras corta
-                    busyBarber = true; // El barbero está ocupado
-                    // "El barbero está cortando el cabello del cliente X"
-                    System.out.println("El barbero está cortando el cabello...");
-                    Thread.sleep(new Random().nextInt(1000) + 1000); // Simular tiempo de corte de cabello
-                    System.out.println("El barbero ha terminado de cortar el cabello.");
-                    busyBarber = false; // El barbero ha terminado y ya no está ocupado
-
+    
+                    // Barber is now cutting hair
+                    System.out.println("El barbero está cortando el cabello del cliente " + currentClient + ".");
+                    Thread.sleep(new Random().nextInt(1000) + 1000); // Simulate cutting hair time
+    
+                    System.out.println("El barbero ha terminado de cortar el cabello del cliente " + currentClient + ".");
+                    currentClient = -1; // Reset after finishing the haircut
+    
+                    busyBarber = false; // Barber is now free
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                    //GARANTIZAMOS QUE LA SILLA (VARIABLE CRITICA/COMPARTIDA)SE LIBERE CORRECTAMENTE AUNQUE HAYA UNA EXCEPCION DURANTE LA EJECUCION DEL PROGRAMA.
                 } finally {
-                    barberChair.release(); // Liberar la silla cuando termina
-
+                    barberChair.release(); // Release the barber chair after finishing
                 }
             }
+        }
+    
+        public void setCurrentClient(int clientId) {
+            this.currentClient = clientId;  // Barber serves this client
         }
     }
 
@@ -46,46 +47,59 @@ public class Barbero {
     static class ClienteThread extends Thread {
 
         private int id;
-
-        public ClienteThread(int id) {
+        private BarberoThread barbero; // Referencia al barbero
+    
+        public ClienteThread(int id, BarberoThread barbero) {
             this.id = id;
+            this.barbero = barbero;  // Inicializar la referencia al barbero
         }
-
+    
         @Override
         public void run() {
-            // "El cliente X ha llegado a la barbería"
-            System.out.println("El cliente " + id + " ha llegado a la barbería.");
-
-            if (!busyBarber && barberChair.tryAcquire()) {
-                // Si el barbero no está ocupado y la silla está libre, esta durmiendo, el cliente lo despierta
-                System.out.println("El cliente " + id + " despierta al barbero.");
-                sleepingBarber.release(); // Despertar al barbero
-            } else if (waitingChairs.tryAcquire()) {
-                //Si el barbero esta ocupado cuando el cliente llega, este se sienta en una de las sillas disponibles
-                System.out.println("El cliente " + id + " se sienta a esperar.");
-                try {
-                    barberChair.acquire(); // Esperar a que la silla del barbero esté libre
-                    waitingChairs.release(); // Liberar la silla de espera
-                    System.out.println("El cliente " + id + " pasa a la silla del barbero.");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            System.out.println("[Cliente " + id + "] ha llegado a la barbería.");
+    
+            try {
+                // Primero intentamos adquirir la silla del barbero directamente
+                if (barberChair.tryAcquire()) {
+                    // Si el barbero no está ocupado y la silla está libre, el cliente lo despierta
+                    System.out.println("[Cliente " + id + "] despierta al barbero.");
+                    barbero.setCurrentClient(id);  // Asignar el cliente al barbero
+                    sleepingBarber.release(); // Despertar al barbero
+                    System.out.println("[Cliente " + id + "] pasa a la silla del barbero.");
+                } else if (waitingChairs.tryAcquire()) {
+                    // Si la silla del barbero está ocupada, el cliente intenta sentarse en una silla de espera
+                    System.out.println("[Cliente " + id + "] se sienta a esperar.");
+    
+                    // El cliente espera hasta que la silla del barbero esté disponible
+                    barberChair.acquire(); // Espera hasta que la silla esté libre
+                    waitingChairs.release(); // Libera la silla de espera
+                    System.out.println("[Cliente " + id + "] pasa a la silla del barbero.");
+                    barbero.setCurrentClient(id);  // Asignar el cliente al barbero
+                    sleepingBarber.release(); // Despertar al barbero si está dormido
+                } else {
+                    // Si no hay sillas de espera disponibles, el cliente se va
+                    System.out.println("[Cliente " + id + "] se va porque no hay sillas disponibles.");
                 }
-            } else {
-                // Si no hay sillas, se va "El cliente X se va porque no hay sillas"
-                System.out.println("El cliente " + id + " se va porque no hay sillas disponibles.");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
+    }
+    
+        
 
         public static void main(String[] args) {
             int numClientes = 100;
             ClienteThread[] clientes = new ClienteThread[numClientes];
+        
+            // Instancia del barbero
             BarberoThread barbero = new BarberoThread();
-
-            barbero.start();
-
+        
+            barbero.start(); // Arrancar el hilo del barbero
+        
             // Crear hilos para los clientes
             for (int i = 0; i < numClientes; i++) {
-                clientes[i] = new ClienteThread(i);
+                clientes[i] = new ClienteThread(i, barbero); // Pasar la referencia del barbero a cada cliente
                 clientes[i].start();
                 try {
                     Thread.sleep(new Random().nextInt(500)); // Simular llegadas aleatorias de clientes
@@ -93,7 +107,7 @@ public class Barbero {
                     e.printStackTrace();
                 }
             }
-
+        
             // Esperar a que todos los clientes terminen
             for (int i = 0; i < numClientes; i++) {
                 try {
@@ -103,5 +117,5 @@ public class Barbero {
                 }
             }
         }
+        
     }
-}
