@@ -9,9 +9,6 @@ public class Barbero {
     private static Semaphore sleepingBarber = new Semaphore(0); // Para que el barbero duerma
     private static boolean busyBarber = false; // Variable de control para verificar si el barbero está ocupado
 
-    //ME FALTA ESTO, (VARIABLE COMPARTIDA QUIZAS... CON CONTROL DE MUTEX)
-    // El proceso de corte toma un tiempo aleatorio (simulado con Sleep). Durante este tiempo, el hilo correspondiente del barbero está ocupado.
-    // "El barbero ha terminado de cortar el cabello del cliente X"
     static class BarberoThread extends Thread {
         private int currentClient = -1;  // To store the ID of the current client being served
     
