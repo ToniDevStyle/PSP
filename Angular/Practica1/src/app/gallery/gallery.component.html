@@ -1,0 +1,16 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Galería de Ciudades</h2>
+  
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" *ngFor="let city of cities">
+      <div class="card mb-4 shadow-lg">
+        <img [src]="city.imageUrl" class="card-img-top" alt="Imagen de {{ city.name }}" style="height: 200px; object-fit: cover;">
+        
+        <div class="card-body">
+          <h5 class="card-title">{{ city.name }}</h5>
+          <p class="card-text">{{ city.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

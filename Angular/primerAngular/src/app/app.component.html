@@ -1,0 +1,73 @@
+
+
+<main class="main">
+  
+  <div>
+    <!-- Interpolación de propiedades simples -->
+    <p>Nombre del Empleado: {{ nombre }}</p>
+    <p>Edad: {{ edad }}</p>
+    <p>Posición: {{ posicion }}</p>
+   
+    <!-- Interpolación de arrays -->
+    <p>Los últimos tres sueldos son: {{ sueldos[0] }}, {{ sueldos[1] }} y {{ sueldos[2] }}</p>
+    <p>En los últimos 3 meses ha ganado: {{ ultimos3Sueldos() }}</p>
+   
+    <!-- Interpolación de funciones -->
+    <p>{{ esActivo() }}</p>
+  
+  
+    <!-- Estructura condicional con *ngIf -->
+    <p *ngIf="activo">El empleado está en servicio.</p>
+    <p *ngIf="!activo">El empleado no está en servicio.</p>
+  
+  
+    <!-- Iteración sobre arrays con *ngFor -->
+    <h3>Proyectos:</h3>
+    <ul>
+      <li *ngFor="let proyecto of proyectos">
+        {{ proyecto.nombre }} - Estado: {{ proyecto.estado }}
+      </li>
+    </ul>
+  
+  
+    <!-- Captura de eventos -->
+    <div>
+      <button (click)="decrementar()">Decrementar Contador</button>
+      <span>Contador: {{ contador }}</span>
+      <button (click)="incrementar()">Incrementar Contador</button>
+    </div>
+  
+  
+    <!-- Captura de eventos para cambiar el estado -->
+    <button (click)="cambiarEstado()">Cambiar Estado del Empleado</button>
+  <p>Estado actual: {{ esActivo() }}</p>
+
+
+  <!-- Combinación de eventos y estructuras de control -->
+  <h3>Consulta de estado de proyecto:</h3>
+  <p>Estado del proyecto 'Sistema de Inventario': {{ obtenerEstadoProyecto('Sistema de Inventario') }}</p>
+  <p>Estado del proyecto 'Proyecto no existente': {{ obtenerEstadoProyecto('Proyecto no existente') }}</p>
+
+
+  <!-- Property Binding para imágenes y atributos -->
+  <h3>Imagen del empleado:</h3>
+  <img [src]="imagenURL" alt="Foto del empleado">
+
+
+  <!-- Property Binding para deshabilitar un botón -->
+  <div>
+    <button [disabled]="!habilitarBoton">Botón habilitado: {{ habilitarBoton }}</button>
+    <button (click)="toggleBoton()">
+      {{ habilitarBoton ? 'Deshabilitar Botón' : 'Habilitar Botón' }}
+    </button>
+  </div>
+</div>
+
+</main>
+
+<a routerLink="/">Inicio</a>
+<a routerLink="/about">Acerca de</a>
+<a routerLink="/contact">Contacto</a>
+
+
+<router-outlet></router-outlet>
