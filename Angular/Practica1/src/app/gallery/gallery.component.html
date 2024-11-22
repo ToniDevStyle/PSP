@@ -1,14 +1,21 @@
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Galería de Ciudades</h2>
-  
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    <div class="col" *ngFor="let city of cities">
-      <div class="card mb-4 shadow-lg">
-        <img [src]="city.imageUrl" class="card-img-top" alt="Imagen de {{ city.name }}" style="height: 200px; object-fit: cover;">
-        
+<div class="container mt-4">
+  <div class="row">
+    <div *ngFor="let city of cities" class="col-md-4 mb-4">
+      <div class="card">
+        <img [src]="city.imageUrl" class="card-img-top" alt="{{ city.name }}">
         <div class="card-body">
           <h5 class="card-title">{{ city.name }}</h5>
           <p class="card-text">{{ city.description }}</p>
+          
+          
+          <div *ngIf="city.weather">
+            <p><strong>Temperatura:</strong> {{ city.weather.temperature }} °C</p>
+            <p><strong>Descripción:</strong> {{ city.weather.description }}</p>
+            <img [src]="city.weather.icon" alt="Weather icon">
+          </div>
+          <div *ngIf="!city.weather">
+            <p><strong>Datos meteorológicos no disponibles.</strong></p>
+          </div>
         </div>
       </div>
     </div>
