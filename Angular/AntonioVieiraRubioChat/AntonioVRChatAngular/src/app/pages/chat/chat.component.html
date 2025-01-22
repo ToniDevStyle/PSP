@@ -1,0 +1,18 @@
+<div class="container mt-4">
+    <h2>Chat en tiempo real</h2>
+
+  
+    <div class="input-group mt-3">
+      <input
+        class="form-control"
+        [(ngModel)]="mensaje"
+        placeholder="Escribe tu mensaje aquí"
+        [disabled]="!conectado"
+      />
+      <button class="btn btn-outline-success" (click)="enviarMensaje()" [disabled]="!conectado || mensaje.trim() === ''">
+        Enviar
+      </button>
+    </div>
+  </div>
+
+  
